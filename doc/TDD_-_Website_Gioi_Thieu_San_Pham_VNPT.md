@@ -55,10 +55,10 @@ Tài liệu bao gồm: kiến trúc tổng quan, tech stack, database schema, th
 | Styling | Tailwind CSS | Theo quyết định ban đầu của dự án |
 | ORM | Prisma | Kết nối PostgreSQL, dùng driver adapter cho serverless |
 | Database | PostgreSQL (Supabase/Neon) | JSONB cho nội dung category |
-| Xác thực Admin | JWT (hoặc Supabase Auth) | Xem mục 5 |
+| Xác thực Admin | JWT + bcrypt (tự triển khai) | Xem mục 5 |
 | Hosting | Vercel | Frontend + API Routes cùng 1 project |
 | Tracking | Google Tag Manager, Facebook Pixel | Nhúng qua `next/script` |
-| Email/Webhook thông báo lead | Resend/SendGrid hoặc Slack Webhook | {cần xác nhận: kênh thông báo lead cụ thể} |
+| Thông báo lead | Zalo Notification Service (Zalo OA, gửi qua webhook) | Xem mục 7.1 |
 
 ## 4. Thiết kế cơ sở dữ liệu
 
@@ -103,7 +103,7 @@ model AdminUser {
 
 ## 5. Xác thực & phân quyền
 
-- ● **Cơ chế:** đăng nhập admin bằng email/password, xác thực qua Supabase Auth (khuyến nghị) hoặc tự triển khai JWT + bcrypt nếu không dùng Supabase.
+- ● **Cơ chế:** đăng nhập admin bằng email/password, tự triển khai JWT + bcrypt (không dùng Supabase Auth). Mật khẩu hash bằng bcrypt (cost factor 10-12), lưu trong bảng `AdminUser`.
 - ● **Phiên đăng nhập:** JWT lưu trong HTTP-only cookie, thời hạn 8 giờ, refresh khi còn hoạt động.
 - ● **Phân quyền:** giai đoạn 1 chỉ có 1 vai trò "Admin" (toàn quyền quản lý lead + nội dung); để ngỏ khả năng thêm vai trò "Sales" (chỉ xem/xử lý lead, không sửa nội dung) ở giai đoạn sau.
 - ● **Bảo vệ API:** middleware kiểm tra JWT hợp lệ cho toàn bộ route dưới `/api/admin/*`; API `/api/leads` (POST) cho phép public gọi (form đăng ký) nhưng có rate-limit chống spam.
@@ -126,7 +126,7 @@ model AdminUser {
 
 ### 7.1 Luồng gửi lead
 1. Khách truy cập điền form trên trang category → client validate → gọi `POST /api/leads`.
-2. API validate lại phía server → lưu vào bảng `Lead` → gửi thông báo (email/webhook) tới nhân viên phụ trách.
+2. API validate lại phía server → lưu vào bảng `Lead` → gọi Zalo Notification Service (webhook `LEAD_NOTIFY_ZALO_WEBHOOK_URL`) để gửi thông báo lead mới tới nhân viên phụ trách qua Zalo OA.
 3. API trả kết quả → frontend hiển thị thông báo thành công/lỗi ngay trên form.
 4. Client bắn sự kiện `Lead` tới Facebook Pixel và GTM sau khi submit thành công.
 
@@ -171,7 +171,41 @@ project-root/
 └── .env
 ```
 
-## 9. Triển khai (Deployment)
+## 9. Môi trường phát triển & Triển khai
+
+### 9.1 Môi trường phát triển local (Docker)
+- ● Dùng Docker Compose để chạy PostgreSQL local, đảm bảo môi trường dev đồng nhất giữa các thành viên, không phụ thuộc Supabase/Neon khi code local.
+- ● Next.js app vẫn chạy bằng `npm run dev` trực tiếp trên máy (không đóng gói vào container) để tận dụng hot-reload nhanh; chỉ container hóa phần dependency (database).
+
+```yaml
+# docker-compose.yml
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: vnpt_landing
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
+```
+
+```bash
+# .env.local (trỏ vào Postgres chạy trong Docker)
+DATABASE_URL="postgresql://app:app@localhost:5432/vnpt_landing"
+DIRECT_URL="postgresql://app:app@localhost:5432/vnpt_landing"
+```
+
+- ● Quy trình dev: `docker compose up -d` → `npx prisma migrate dev` → `npx prisma db seed` → `npm run dev`.
+- ● Khi lên production, đổi `DATABASE_URL`/`DIRECT_URL` sang connection string của Supabase/Neon (mục 9.2) — schema Prisma dùng chung, không cần sửa code.
+
+### 9.2 Triển khai (Deployment)
 
 - ● **Hosting:** Vercel, kết nối trực tiếp với Git repository, tự động deploy khi merge vào nhánh `main`.
 - ● **Database:** Supabase hoặc Neon (Postgres serverless), dùng connection pooling (pgbouncer/Neon pooled connection) để tránh nghẽn khi API Routes chạy dạng serverless function.
@@ -187,7 +221,7 @@ project-root/
 | Truy vấn DB dưới 200ms | Index cho các cột filter/sort thường dùng ở màn hình danh sách lead |
 | JWT + phân quyền | Middleware xác thực cho toàn bộ `/api/admin/*` |
 | HTTPS/TLS | Mặc định trên Vercel |
-| Mật khẩu hash bcrypt | Áp dụng nếu không dùng Supabase Auth (Supabase tự quản lý hash) |
+| Mật khẩu hash bcrypt | Áp dụng cho toàn bộ tài khoản trong bảng `AdminUser` |
 | CORS Policy | API chỉ chấp nhận request same-origin (không cần mở CORS vì frontend + API chung domain) |
 | Uptime 99.5% | Vercel + Supabase/Neon đều có SLA uptime tương ứng ở gói trả phí |
 | Backup & Recovery | Bật point-in-time recovery của Supabase/Neon, backup hàng ngày |
@@ -201,6 +235,5 @@ project-root/
 | `JWT_SECRET` | Khóa ký JWT (nếu không dùng Supabase Auth) |
 | `NEXT_PUBLIC_GTM_ID` | ID Google Tag Manager |
 | `NEXT_PUBLIC_FB_PIXEL_ID` | ID Facebook Pixel |
-| `LEAD_NOTIFY_WEBHOOK_URL` | Webhook/email service nhận thông báo lead mới |
-
-{cần xác nhận: kênh thông báo lead cụ thể (email hay Slack/Zalo webhook) và có dùng Supabase Auth hay tự viết JWT — hai điểm này ảnh hưởng trực tiếp đến phần code xác thực và thông báo}
+| `LEAD_NOTIFY_ZALO_WEBHOOK_URL` | Webhook Zalo Notification Service (Zalo OA) nhận thông báo lead mới |
+| `ZALO_OA_ACCESS_TOKEN` | Access token của Zalo Official Account dùng để gửi tin nhắn thông báo |

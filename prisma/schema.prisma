@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  slug      String   @unique // vd: "chu-ky-so"
+  name      String
+  hero      Json // { title, description, bannerUrl }
+  features  Json // [{ title, description }]
+  pricing   Json // [{ planName, price, description }]
+  faq       Json // [{ question, answer }]
+  updatedBy String? // email admin sửa gần nhất
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  fullName     String
+  phone        String
+  email        String?
+  categorySlug String
+  note         String?
+  status       String   @default("new") // new | contacting | won | lost
+  createdAt    DateTime @default(now())
+
+  // Index theo mục 10 TDD: đáp ứng ngưỡng truy vấn danh sách/lọc lead dưới 200ms
+  @@index([status])
+  @@index([categorySlug])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String // bcrypt, cost factor 10-12
+  createdAt    DateTime @default(now())
+}
