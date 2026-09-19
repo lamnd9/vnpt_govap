@@ -53,3 +53,6 @@ Xem `.env.example` và mục 11 của TDD. Khi lên production, đổi `DATABASE
 ## Cấu trúc thư mục
 
 Theo mục 8 của TDD: `app/(public)` (trang giới thiệu, SSG/ISR), `app/(admin)` (khu vực quản trị, CSR), `app/api` (API Routes), `lib/` (prisma client, auth, validation), `components/` (landing, admin), `prisma/` (schema + seed). `tests/` chứa test tích hợp (Vitest).
+
+Email: admin@vnpt.vn
+Mật khẩu: Admin@123

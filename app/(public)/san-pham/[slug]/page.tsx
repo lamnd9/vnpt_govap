@@ -11,6 +11,15 @@ import { LeadForm } from "@/components/landing/LeadForm";
 
 export const revalidate = 3600;
 
+// Ảnh minh hoạ trang trí riêng cho hero — không thuộc nội dung CMS (Category.hero),
+// nên khai báo tĩnh tại đây thay vì thêm field mới vào schema Json chỉ cho mục đích thẩm mỹ.
+const HERO_ILLUSTRATIONS: Record<string, string> = {
+  "chu-ky-so": "/images/categories/chu-ky-so/illustration.webp",
+};
+
+// Riêng trang chữ ký số chỉ cần Bảng giá — ẩn Tính năng nổi bật + Câu hỏi thường gặp.
+const PRICING_ONLY_SLUGS = new Set(["chu-ky-so"]);
+
 // cache() dedupe lời gọi trong cùng 1 request — generateMetadata và trang đều cần category
 // này nên chỉ nên query Prisma 1 lần thay vì 2 (Prisma không tự dedupe như fetch()).
 const getCategoryBySlug = cache((slug: string) => prisma.category.findUnique({ where: { slug } }));
@@ -60,6 +69,7 @@ export default async function CategoryPage({
   }
 
   const content = parseCategoryContent(category);
+  const pricingOnly = PRICING_ONLY_SLUGS.has(category.slug);
 
   return (
     <>
@@ -67,12 +77,15 @@ export default async function CategoryPage({
         title={content.hero.title}
         description={content.hero.description}
         bannerUrl={content.hero.bannerUrl}
-        ctaLabel="Đăng ký tư vấn"
-        ctaHref="#dang-ky-tu-van"
+        illustrationUrl={HERO_ILLUSTRATIONS[category.slug]}
       />
-      <FeatureList features={content.features} />
-      <PricingTable pricing={content.pricing} />
-      <FaqAccordion faq={content.faq} />
+      {pricingOnly ? null : <FeatureList features={content.features} />}
+      <PricingTable
+        pricing={content.pricing}
+        layout={pricingOnly ? "table" : "cards"}
+        title={pricingOnly ? content.hero.title.toUpperCase() : undefined}
+      />
+      {pricingOnly ? null : <FaqAccordion faq={content.faq} />}
       <LeadForm categories={categories} defaultCategorySlug={category.slug} />
     </>
   );

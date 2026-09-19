@@ -27,8 +27,21 @@ const categories: CategorySeed[] = [
       { title: "Bảo mật cao", description: "Tuân thủ tiêu chuẩn pháp lý về chữ ký số tại Việt Nam." },
     ],
     pricing: [
-      { planName: "Gói 1 năm", price: "Liên hệ", description: "Phù hợp cá nhân, hộ kinh doanh nhỏ." },
-      { planName: "Gói 2 năm", price: "Liên hệ", description: "Tiết kiệm chi phí cho doanh nghiệp." },
+      {
+        planName: "Chữ ký số VNPT 1 Năm tặng 6 tháng",
+        price: "1.296.000(VND)",
+        description: "6 tháng",
+      },
+      {
+        planName: "Chữ ký số VNPT 2 Năm tặng 9 tháng",
+        price: "2.116.800(VND)",
+        description: "9 tháng",
+      },
+      {
+        planName: "Chữ ký số VNPT 3 Năm tặng 12 tháng",
+        price: "2.484.000(VND)",
+        description: "12 tháng",
+      },
     ],
     faq: [
       { question: "Chữ ký số VNPT có giá trị pháp lý không?", answer: "Có, tuân thủ quy định pháp luật Việt Nam về giao dịch điện tử." },
