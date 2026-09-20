@@ -7,8 +7,6 @@ type HeroProps = {
   ctaLabel?: string;
   ctaHref?: string;
   illustrationUrl?: string;
-  illustrationWidth?: number;
-  illustrationHeight?: number;
 };
 
 export function Hero({
@@ -18,8 +16,6 @@ export function Hero({
   ctaLabel,
   ctaHref,
   illustrationUrl,
-  illustrationWidth = 513,
-  illustrationHeight = 456,
 }: HeroProps) {
   return (
     <section className="relative overflow-hidden bg-slate-900">
@@ -49,14 +45,15 @@ export function Hero({
           ) : null}
         </div>
         {illustrationUrl ? (
-          <Image
-            src={illustrationUrl}
-            alt=""
-            width={illustrationWidth}
-            height={illustrationHeight}
-            unoptimized
-            className="hidden h-auto w-56 shrink-0 rounded-lg sm:block lg:w-72"
-          />
+          <div className="relative hidden h-40 w-56 shrink-0 sm:block lg:h-48 lg:w-72">
+            <Image
+              src={illustrationUrl}
+              alt=""
+              fill
+              unoptimized
+              className="rounded-lg object-contain"
+            />
+          </div>
         ) : null}
       </div>
     </section>

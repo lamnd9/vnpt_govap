@@ -9,16 +9,34 @@ datasource db {
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  slug      String   @unique // vd: "chu-ky-so"
-  name      String
-  hero      Json // { title, description, bannerUrl }
-  features  Json // [{ title, description }]
-  pricing   Json // [{ planName, price, description }]
-  faq       Json // [{ question, answer }]
-  updatedBy String? // email admin sửa gần nhất
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  slug            String   @unique // vd: "chu-ky-so"
+  name            String
+  hero            Json // { title, description, bannerUrl }
+  features        Json // [{ title, description }]
+  pricing         Json // [{ planName, price, description }]
+  faq             Json // [{ question, answer }]
+  illustrationUrl String? // ảnh minh hoạ hero, null = không hiển thị
+  showFeatures    Boolean  @default(true) // ẩn/hiện section "Tính năng nổi bật"
+  showFaq         Boolean  @default(true) // ẩn/hiện section "Câu hỏi thường gặp"
+  pricingLayout   String   @default("cards") // "cards" | "table"
+  pricingColumns  Json? // { plan, middle, price } | null = dùng nhãn mặc định
+  updatedBy       String? // email admin sửa gần nhất
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
+// Cấu hình liên hệ chung, dùng chung cho header/footer/floating-contact ở trang public.
+// Singleton: luôn chỉ có 1 row với id cố định "main".
+model SiteSettings {
+  id           String   @id @default("main")
+  email        String
+  phone        String
+  messengerUrl String
+  zaloUrl      String
+  updatedBy    String? // email admin sửa gần nhất
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 }
 
 model Lead {

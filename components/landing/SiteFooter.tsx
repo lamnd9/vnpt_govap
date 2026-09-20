@@ -1,8 +1,14 @@
 import Link from "next/link";
+import { formatPhoneDisplay } from "@/lib/phone";
 
-// Nội dung liên hệ/mạng xã hội cố định (thông tin doanh nghiệp, không phải nội dung
-// category quản lý qua CMS) — theo mục 4.1 SRS.
-export function SiteFooter() {
+type SiteFooterProps = {
+  phone: string;
+  email: string;
+};
+
+// Mạng xã hội vẫn cố định (kênh công khai, khác khái niệm với link chat 1:1 ở FloatingContact)
+// — chỉ phone/email lấy từ Cấu hình chung để đồng bộ với header/floating-contact.
+export function SiteFooter({ phone, email }: SiteFooterProps) {
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
@@ -15,8 +21,8 @@ export function SiteFooter() {
         <div>
           <p className="text-sm font-semibold text-slate-900">Liên hệ</p>
           <ul className="mt-2 space-y-1 text-sm text-slate-600">
-            <li>Hotline: 1800 1166</li>
-            <li>Email: cskh@vnpt.com.vn</li>
+            <li>Hotline: {formatPhoneDisplay(phone)}</li>
+            <li>Email: {email}</li>
             <li>Địa chỉ: 57 Huỳnh Thúc Kháng, Hà Nội</li>
           </ul>
         </div>

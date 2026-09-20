@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -10,6 +10,11 @@ type CategorySeed = {
   features: { title: string; description: string }[];
   pricing: { planName: string; price: string; description: string }[];
   faq: { question: string; answer: string }[];
+  illustrationUrl: string | null;
+  showFeatures: boolean;
+  showFaq: boolean;
+  pricingLayout: "cards" | "table";
+  pricingColumns: { plan: string; middle: string; price: string } | null;
 };
 
 const categories: CategorySeed[] = [
@@ -46,6 +51,11 @@ const categories: CategorySeed[] = [
     faq: [
       { question: "Chữ ký số VNPT có giá trị pháp lý không?", answer: "Có, tuân thủ quy định pháp luật Việt Nam về giao dịch điện tử." },
     ],
+    illustrationUrl: "/images/categories/chu-ky-so/illustration.webp",
+    showFeatures: false,
+    showFaq: false,
+    pricingLayout: "table",
+    pricingColumns: null,
   },
   {
     slug: "hoa-don-dien-tu",
@@ -67,6 +77,11 @@ const categories: CategorySeed[] = [
     faq: [
       { question: "Hóa đơn điện tử có cần đăng ký với cơ quan thuế không?", answer: "Có, VNPT hỗ trợ đăng ký và kết nối trong quá trình triển khai." },
     ],
+    illustrationUrl: "/images/categories/hoa-don-dien-tu/illustration.webp",
+    showFeatures: false,
+    showFaq: false,
+    pricingLayout: "table",
+    pricingColumns: { plan: "Tên gói cước", middle: "Số lượng hóa đơn", price: "Đơn giá(VND)" },
   },
   {
     slug: "phan-mem-cho-doanh-nghiep",
@@ -88,6 +103,11 @@ const categories: CategorySeed[] = [
     faq: [
       { question: "Phần mềm có tích hợp được với hệ thống hiện tại không?", answer: "Có, hỗ trợ tích hợp qua API theo yêu cầu triển khai." },
     ],
+    illustrationUrl: "/images/categories/phan-mem-cho-doanh-nghiep/illustration.svg",
+    showFeatures: false,
+    showFaq: false,
+    pricingLayout: "table",
+    pricingColumns: null,
   },
   {
     slug: "phan-mem-cho-ho-kinh-doanh",
@@ -109,6 +129,11 @@ const categories: CategorySeed[] = [
     faq: [
       { question: "Có cần thiết bị chuyên dụng để sử dụng không?", answer: "Không, chỉ cần điện thoại hoặc máy tính có kết nối Internet." },
     ],
+    illustrationUrl: "/images/categories/phan-mem-cho-ho-kinh-doanh/illustration.svg",
+    showFeatures: false,
+    showFaq: false,
+    pricingLayout: "table",
+    pricingColumns: null,
   },
   {
     slug: "giai-phap-cho-khoi-chinh-quyen",
@@ -130,6 +155,11 @@ const categories: CategorySeed[] = [
     faq: [
       { question: "Giải pháp có đáp ứng quy định về an toàn thông tin không?", answer: "Có, tuân thủ các quy định về an toàn thông tin trong cơ quan nhà nước." },
     ],
+    illustrationUrl: "/images/categories/giai-phap-cho-khoi-chinh-quyen/illustration.svg",
+    showFeatures: false,
+    showFaq: false,
+    pricingLayout: "table",
+    pricingColumns: null,
   },
   {
     slug: "giai-phap-cho-truong-hoc",
@@ -151,6 +181,11 @@ const categories: CategorySeed[] = [
     faq: [
       { question: "Phụ huynh sử dụng giải pháp như thế nào?", answer: "Phụ huynh sử dụng ứng dụng di động để theo dõi thông tin của con." },
     ],
+    illustrationUrl: "/images/categories/giai-phap-cho-truong-hoc/illustration.svg",
+    showFeatures: false,
+    showFaq: false,
+    pricingLayout: "table",
+    pricingColumns: null,
   },
 ];
 
@@ -164,8 +199,13 @@ async function main() {
         features: category.features,
         pricing: category.pricing,
         faq: category.faq,
+        illustrationUrl: category.illustrationUrl,
+        showFeatures: category.showFeatures,
+        showFaq: category.showFaq,
+        pricingLayout: category.pricingLayout,
+        pricingColumns: category.pricingColumns ?? Prisma.JsonNull,
       },
-      create: category,
+      create: { ...category, pricingColumns: category.pricingColumns ?? Prisma.JsonNull },
     });
   }
 
@@ -177,7 +217,21 @@ async function main() {
     create: { email: adminEmail, passwordHash: adminPasswordHash },
   });
 
-  console.log(`Seeded ${categories.length} categories và 1 tài khoản admin (${adminEmail}).`);
+  // Cấu hình liên hệ chung dùng cho header/footer/floating-contact trang public — giữ đúng
+  // giá trị đang hardcode hiện tại để không bị mất khi chuyển sang quản lý qua Admin.
+  await prisma.siteSettings.upsert({
+    where: { id: "main" },
+    update: {},
+    create: {
+      id: "main",
+      email: "toannm.hcm@vnpt.vn",
+      phone: "0941048085",
+      messengerUrl: "https://www.facebook.com/messages/t/duylam87",
+      zaloUrl: "https://zalo.me/0941048085",
+    },
+  });
+
+  console.log(`Seeded ${categories.length} categories, 1 tài khoản admin (${adminEmail}) và cấu hình liên hệ chung.`);
 }
 
 main()

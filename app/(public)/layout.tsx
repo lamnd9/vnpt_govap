@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { prisma } from "@/lib/prisma";
+import { getSiteSettings } from "@/lib/site-settings";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { FloatingContact } from "@/components/landing/FloatingContact";
@@ -10,20 +11,27 @@ import {
 import { FacebookPixelScript } from "@/components/landing/FacebookPixel";
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
-  const categories = await prisma.category.findMany({
-    select: { slug: true, name: true },
-    orderBy: { createdAt: "asc" },
-  });
+  const [categories, settings] = await Promise.all([
+    prisma.category.findMany({
+      select: { slug: true, name: true },
+      orderBy: { createdAt: "asc" },
+    }),
+    getSiteSettings(),
+  ]);
 
   return (
     <>
       <GoogleTagManagerScript />
       <FacebookPixelScript />
       <GoogleTagManagerNoscript />
-      <SiteHeader categories={categories} />
+      <SiteHeader categories={categories} email={settings.email} phone={settings.phone} />
       <main className="flex-1">{children}</main>
-      <SiteFooter />
-      <FloatingContact />
+      <SiteFooter phone={settings.phone} email={settings.email} />
+      <FloatingContact
+        phone={settings.phone}
+        messengerUrl={settings.messengerUrl}
+        zaloUrl={settings.zaloUrl}
+      />
     </>
   );
 }

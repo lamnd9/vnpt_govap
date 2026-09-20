@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { PrismaClient, type Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { BASE_URL } from "./setup/global-setup";
 
 const prisma = new PrismaClient();
@@ -11,6 +11,11 @@ let originalContent: {
   features: Prisma.JsonValue;
   pricing: Prisma.JsonValue;
   faq: Prisma.JsonValue;
+  illustrationUrl: string | null;
+  showFeatures: boolean;
+  showFaq: boolean;
+  pricingLayout: string;
+  pricingColumns: Prisma.JsonValue;
 };
 
 beforeAll(async () => {
@@ -27,16 +32,25 @@ beforeAll(async () => {
     features: category.features,
     pricing: category.pricing,
     faq: category.faq,
+    illustrationUrl: category.illustrationUrl,
+    showFeatures: category.showFeatures,
+    showFaq: category.showFaq,
+    pricingLayout: category.pricingLayout,
+    pricingColumns: category.pricingColumns,
   };
 });
 
 afterAll(async () => {
   // Khôi phục nội dung gốc để không làm bẩn dữ liệu seed cho các lần chạy sau.
   // Cast vì Prisma phân biệt "null JS thường" với sentinel JsonNull cho cột Json,
-  // trong khi dữ liệu đọc lên ở đây chắc chắn không phải null (luôn là object/array).
+  // trong khi hero/features/pricing/faq đọc lên ở đây chắc chắn không phải null (luôn
+  // là object/array) — riêng pricingColumns (Json? nullable) cần map null -> JsonNull.
   await prisma.category.update({
     where: { slug: TEST_SLUG },
-    data: originalContent as Prisma.CategoryUpdateInput,
+    data: {
+      ...(originalContent as Prisma.CategoryUpdateInput),
+      pricingColumns: originalContent.pricingColumns ?? Prisma.JsonNull,
+    },
   });
   await prisma.$disconnect();
 });
@@ -79,6 +93,11 @@ describe("GET/PUT /api/admin/categories/:slug", () => {
       features: [{ title: "Tính năng test", description: "Mô tả tính năng test" }],
       pricing: [{ planName: "Gói test", price: "0đ", description: "Mô tả gói test" }],
       faq: [{ question: "Câu hỏi test?", answer: "Câu trả lời test" }],
+      illustrationUrl: null,
+      showFeatures: true,
+      showFaq: true,
+      pricingLayout: "cards" as const,
+      pricingColumns: null,
     };
 
     const start = performance.now();
@@ -119,6 +138,11 @@ describe("GET/PUT /api/admin/categories/:slug", () => {
         features: [],
         pricing: [],
         faq: [],
+        illustrationUrl: null,
+        showFeatures: true,
+        showFaq: true,
+        pricingLayout: "cards",
+        pricingColumns: null,
       }),
     });
     expect(response.status).toBe(404);

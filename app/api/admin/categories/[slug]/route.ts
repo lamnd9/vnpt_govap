@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { categoryContentSchema } from "@/lib/validation";
-import { parseCategoryContent } from "@/lib/category-content";
+import { categoryUpdateSchema } from "@/lib/validation";
+import { getCategoryViewModel } from "@/lib/category-content";
 
 export async function GET(
   _request: NextRequest,
@@ -19,7 +19,7 @@ export async function GET(
 
   // Validate lại hình dạng JSON giống hệt route public — tránh Content Editor crash nếu
   // dữ liệu trong DB từng bị chỉnh tay/không đúng chuẩn.
-  const content = parseCategoryContent(category);
+  const content = getCategoryViewModel(category);
 
   return NextResponse.json({
     id: category.id,
@@ -44,7 +44,7 @@ export async function PUT(
     return NextResponse.json({ error: "Dữ liệu gửi lên không hợp lệ." }, { status: 400 });
   }
 
-  const parsed = categoryContentSchema.safeParse(body);
+  const parsed = categoryUpdateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Dữ liệu không hợp lệ.", fieldErrors: parsed.error.flatten().fieldErrors },
@@ -58,7 +58,13 @@ export async function PUT(
   try {
     const category = await prisma.category.update({
       where: { slug },
-      data: { ...parsed.data, updatedBy: adminEmail },
+      data: {
+        ...parsed.data,
+        // Cột Json nullable: Prisma cần sentinel Prisma.JsonNull thay vì JS null để thực sự
+        // ghi giá trị null (JS null bị hiểu là "field không xuất hiện trong payload").
+        pricingColumns: parsed.data.pricingColumns ?? Prisma.JsonNull,
+        updatedBy: adminEmail,
+      },
     });
 
     // Trigger ISR revalidate để trang public cập nhật ngay sau khi lưu (mục 7.2 TDD).

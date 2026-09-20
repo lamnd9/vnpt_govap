@@ -84,3 +84,48 @@ export const categoryContentSchema = z.object({
 });
 
 export type CategoryContentInput = z.infer<typeof categoryContentSchema>;
+
+export const PRICING_LAYOUTS = ["cards", "table"] as const;
+
+const pricingColumnsSchema = z
+  .object({
+    plan: z.string().trim().min(1),
+    middle: z.string().trim().min(1),
+    price: z.string().trim().min(1),
+  })
+  .nullable();
+
+// Cấu hình hiển thị của category — khác categoryContentSchema (nội dung): đây là các cột
+// đã typed sẵn trong DB (không phải Json tự do), điều khiển việc trang public render ra sao.
+export const categoryDisplayConfigSchema = z.object({
+  // "" -> null (không phải undefined): đây là form update gửi full state, chuỗi rỗng nghĩa
+  // là "xoá ảnh minh hoạ" và phải map sang null để Prisma thực sự cập nhật (undefined bị
+  // Prisma coi là "giữ nguyên", giống lý do clearableNote ở leadUpdateSchema bên trên).
+  illustrationUrl: z
+    .string()
+    .trim()
+    .transform((value) => (value ? value : null))
+    .nullable(),
+  showFeatures: z.boolean(),
+  showFaq: z.boolean(),
+  pricingLayout: z.enum(PRICING_LAYOUTS),
+  pricingColumns: pricingColumnsSchema,
+});
+
+export type CategoryDisplayConfig = z.infer<typeof categoryDisplayConfigSchema>;
+
+export const categoryUpdateSchema = z.object({
+  ...categoryContentSchema.shape,
+  ...categoryDisplayConfigSchema.shape,
+});
+
+export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
+
+export const siteSettingsSchema = z.object({
+  email: z.email("Email không hợp lệ."),
+  phone: phoneSchema,
+  messengerUrl: z.url("Link Messenger không hợp lệ."),
+  zaloUrl: z.url("Link Zalo không hợp lệ."),
+});
+
+export type SiteSettingsInput = z.infer<typeof siteSettingsSchema>;
