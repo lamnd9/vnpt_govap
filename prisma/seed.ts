@@ -60,8 +60,9 @@ const categories: CategorySeed[] = [
       { title: "Quản lý tập trung", description: "Theo dõi, tra cứu hóa đơn mọi lúc trên một nền tảng." },
     ],
     pricing: [
-      { planName: "Gói cơ bản", price: "Liên hệ", description: "Phù hợp hộ kinh doanh, doanh nghiệp nhỏ." },
-      { planName: "Gói nâng cao", price: "Liên hệ", description: "Tích hợp API cho doanh nghiệp lớn." },
+      { planName: "2000 Hóa đơn điện tử", price: "1.404.000(VND)", description: "2300 hóa đơn" },
+      { planName: "1000 Hóa đơn điện tử", price: "940.680(VND)", description: "500 hóa đơn" },
+      { planName: "500 Hóa đơn điện tử", price: "589.680(VND)", description: "300 hóa đơn" },
     ],
     faq: [
       { question: "Hóa đơn điện tử có cần đăng ký với cơ quan thuế không?", answer: "Có, VNPT hỗ trợ đăng ký và kết nối trong quá trình triển khai." },
@@ -80,8 +81,9 @@ const categories: CategorySeed[] = [
       { title: "Báo cáo thời gian thực", description: "Dashboard trực quan hỗ trợ ra quyết định nhanh." },
     ],
     pricing: [
-      { planName: "Gói Starter", price: "Liên hệ", description: "Cho doanh nghiệp mới bắt đầu chuyển đổi số." },
-      { planName: "Gói Enterprise", price: "Liên hệ", description: "Tùy chỉnh theo quy mô doanh nghiệp lớn." },
+      { planName: "Gói Starter", price: "3.600.000(VND)", description: "12 tháng" },
+      { planName: "Gói Business", price: "7.200.000(VND)", description: "12 tháng" },
+      { planName: "Gói Enterprise", price: "15.000.000(VND)", description: "12 tháng" },
     ],
     faq: [
       { question: "Phần mềm có tích hợp được với hệ thống hiện tại không?", answer: "Có, hỗ trợ tích hợp qua API theo yêu cầu triển khai." },
@@ -100,7 +102,9 @@ const categories: CategorySeed[] = [
       { title: "Theo dõi thu chi", description: "Ghi nhận doanh thu, chi phí hàng ngày rõ ràng." },
     ],
     pricing: [
-      { planName: "Gói cơ bản", price: "Liên hệ", description: "Chi phí thấp, phù hợp quy mô nhỏ." },
+      { planName: "Gói Cơ bản", price: "1.200.000(VND)", description: "12 tháng" },
+      { planName: "Gói Tiêu chuẩn", price: "2.400.000(VND)", description: "12 tháng" },
+      { planName: "Gói Nâng cao", price: "3.600.000(VND)", description: "12 tháng" },
     ],
     faq: [
       { question: "Có cần thiết bị chuyên dụng để sử dụng không?", answer: "Không, chỉ cần điện thoại hoặc máy tính có kết nối Internet." },
@@ -119,7 +123,9 @@ const categories: CategorySeed[] = [
       { title: "Báo cáo, thống kê", description: "Tổng hợp dữ liệu phục vụ điều hành, quản lý." },
     ],
     pricing: [
-      { planName: "Triển khai theo dự án", price: "Liên hệ", description: "Tư vấn giải pháp phù hợp quy mô đơn vị." },
+      { planName: "Gói Xã/Phường", price: "8.000.000(VND)", description: "12 tháng" },
+      { planName: "Gói Quận/Huyện", price: "20.000.000(VND)", description: "12 tháng" },
+      { planName: "Gói Tỉnh/Thành", price: "50.000.000(VND)", description: "12 tháng" },
     ],
     faq: [
       { question: "Giải pháp có đáp ứng quy định về an toàn thông tin không?", answer: "Có, tuân thủ các quy định về an toàn thông tin trong cơ quan nhà nước." },
@@ -138,7 +144,9 @@ const categories: CategorySeed[] = [
       { title: "Quản lý học tập", description: "Theo dõi điểm số, thời khóa biểu tập trung." },
     ],
     pricing: [
-      { planName: "Gói theo năm học", price: "Liên hệ", description: "Tùy chỉnh theo quy mô trường học." },
+      { planName: "Gói dưới 500 học sinh", price: "6.000.000(VND)", description: "1 năm học" },
+      { planName: "Gói 500 - 2.000 học sinh", price: "15.000.000(VND)", description: "1 năm học" },
+      { planName: "Gói trên 2.000 học sinh", price: "30.000.000(VND)", description: "1 năm học" },
     ],
     faq: [
       { question: "Phụ huynh sử dụng giải pháp như thế nào?", answer: "Phụ huynh sử dụng ứng dụng di động để theo dõi thông tin của con." },

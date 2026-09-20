@@ -1,13 +1,15 @@
-const CONTACT_HOTLINE = "1800 1166";
-const CONTACT_HOTLINE_TEL = "18001166";
-const CONTACT_ZALO_URL = "https://zalo.me/vnpt";
-const CONTACT_MESSENGER_URL = "https://m.me/vnpt";
+import Image from "next/image";
+
+const CONTACT_HOTLINE = "0941.048.085";
+const CONTACT_HOTLINE_TEL = "0941048085";
+const CONTACT_ZALO_URL = "https://zalo.me/0941048085";
+const CONTACT_MESSENGER_URL = "https://www.facebook.com/messages/t/duylam87";
 
 const quickLinks = [
   {
     title: "Đăng ký Online",
     subtitle: "24/24",
-    href: "/#san-pham",
+    href: "#dang-ky-tu-van",
     external: false,
     iconBg: "bg-red-600",
     icon: (
@@ -33,11 +35,9 @@ const quickLinks = [
     subtitle: "0h00 - 23h59",
     href: CONTACT_ZALO_URL,
     external: true,
-    iconBg: "bg-[#0068FF]",
+    iconBg: "bg-white ring-1 ring-slate-200",
     icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-        <path d="M12 2C6.48 2 2 6.02 2 11c0 2.86 1.48 5.4 3.79 7.06-.12.98-.46 2.2-1.34 3.3-.13.16-.02.4.19.4 1.85-.06 3.4-.8 4.4-1.44A11.1 11.1 0 0012 20.5c5.52 0 10-4.02 10-9S17.52 2 12 2z" />
-      </svg>
+      <Image src="/images/icons/zalo.png" alt="Zalo" width={64} height={64} className="h-7 w-7 object-contain" />
     ),
   },
 ];

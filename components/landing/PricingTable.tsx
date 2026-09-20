@@ -1,12 +1,30 @@
 type PricingPlan = { planName: string; price: string; description: string };
 
+type PricingTableColumns = {
+  plan: string;
+  middle: string;
+  price: string;
+};
+
+const DEFAULT_TABLE_COLUMNS: PricingTableColumns = {
+  plan: "Gói dịch vụ",
+  middle: "Thời hạn đăng ký",
+  price: "Tổng gói cước (VND)",
+};
+
 type PricingTableProps = {
   pricing: PricingPlan[];
   layout?: "cards" | "table";
   title?: string;
+  columns?: PricingTableColumns;
 };
 
-export function PricingTable({ pricing, layout = "cards", title = "Bảng giá" }: PricingTableProps) {
+export function PricingTable({
+  pricing,
+  layout = "cards",
+  title = "Bảng giá",
+  columns = DEFAULT_TABLE_COLUMNS,
+}: PricingTableProps) {
   if (pricing.length === 0) return null;
 
   if (layout === "table") {
@@ -20,12 +38,12 @@ export function PricingTable({ pricing, layout = "cards", title = "Bảng giá" 
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="bg-blue-800 text-white">
-                  <th className="px-4 py-3 text-sm font-bold uppercase sm:text-base">Gói dịch vụ</th>
+                  <th className="px-4 py-3 text-sm font-bold uppercase sm:text-base">{columns.plan}</th>
                   <th className="px-4 py-3 text-center text-sm font-bold uppercase sm:text-base">
-                    Thời hạn đăng ký
+                    {columns.middle}
                   </th>
                   <th className="px-4 py-3 text-center text-sm font-bold uppercase sm:text-base">
-                    Tổng gói cước (VND)
+                    {columns.price}
                   </th>
                 </tr>
               </thead>

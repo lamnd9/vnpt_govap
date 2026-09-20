@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { parseCategoryContent } from "@/lib/category-content";
 import { Hero } from "@/components/landing/Hero";
 import { CategoryCard } from "@/components/landing/CategoryCard";
+import { LeadForm } from "@/components/landing/LeadForm";
 
 // ISR: nội dung lấy từ DB tại build/revalidate, không query mỗi lần truy cập (mục 2.2 TDD).
 // Admin lưu nội dung sẽ trigger revalidatePath ngay lập tức (mục 7.2 TDD); đây là fallback định kỳ.
@@ -47,6 +48,11 @@ export default async function HomePage() {
           })}
         </div>
       </section>
+
+      <LeadForm
+        categories={categories.map((category) => ({ slug: category.slug, name: category.name }))}
+        defaultCategorySlug={categories[0]?.slug ?? ""}
+      />
     </>
   );
 }
