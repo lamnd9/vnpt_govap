@@ -13,12 +13,8 @@ model Category {
   slug            String   @unique // vd: "chu-ky-so"
   name            String
   hero            Json // { title, description, bannerUrl }
-  features        Json // [{ title, description }]
   pricing         Json // [{ planName, price, description }]
-  faq             Json // [{ question, answer }]
   illustrationUrl String? // ảnh minh hoạ hero, null = không hiển thị
-  showFeatures    Boolean  @default(true) // ẩn/hiện section "Tính năng nổi bật"
-  showFaq         Boolean  @default(true) // ẩn/hiện section "Câu hỏi thường gặp"
   pricingLayout   String   @default("cards") // "cards" | "table"
   pricingColumns  Json? // { plan, middle, price } | null = dùng nhãn mặc định
   updatedBy       String? // email admin sửa gần nhất
@@ -32,6 +28,7 @@ model SiteSettings {
   id           String   @id @default("main")
   email        String
   phone        String
+  address      String
   messengerUrl String
   zaloUrl      String
   updatedBy    String? // email admin sửa gần nhất

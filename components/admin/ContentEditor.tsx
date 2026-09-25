@@ -1,14 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { CategoryContentInput, CategoryDisplayConfig } from "@/lib/validation";
 import { Hero } from "@/components/landing/Hero";
-import { FeatureList } from "@/components/landing/FeatureList";
 import { PricingTable } from "@/components/landing/PricingTable";
-import { FaqAccordion } from "@/components/landing/FaqAccordion";
-
-type CategoryOption = { slug: string; name: string };
 
 type CategoryEditState = CategoryContentInput & CategoryDisplayConfig;
 
@@ -29,12 +24,8 @@ const DEFAULT_TABLE_COLUMNS = {
 function extractEditState(category: CategoryRecord): CategoryEditState {
   return {
     hero: category.hero,
-    features: category.features,
     pricing: category.pricing,
-    faq: category.faq,
     illustrationUrl: category.illustrationUrl,
-    showFeatures: category.showFeatures,
-    showFaq: category.showFaq,
     pricingLayout: category.pricingLayout,
     pricingColumns: category.pricingColumns,
   };
@@ -46,14 +37,7 @@ type LoadState =
   | { status: "error"; message: string }
   | { status: "ready"; category: CategoryRecord };
 
-export function ContentEditor({
-  slug,
-  categories,
-}: {
-  slug: string;
-  categories: CategoryOption[];
-}) {
-  const router = useRouter();
+export function ContentEditor({ slug }: { slug: string }) {
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [content, setContent] = useState<CategoryEditState | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -125,25 +109,7 @@ export function ContentEditor({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Chỉnh sửa nội dung sản phẩm</h1>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {categories.map((c) => (
-            <button
-              key={c.slug}
-              type="button"
-              onClick={() => router.push(`/content/${c.slug}`)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                c.slug === slug
-                  ? "bg-blue-800 text-white"
-                  : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
-              }`}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold text-slate-900">Chỉnh sửa nội dung sản phẩm</h1>
 
       {state.status === "loading" ? <p className="text-slate-500">Đang tải...</p> : null}
       {state.status === "not-found" ? (
@@ -158,7 +124,7 @@ export function ContentEditor({
             {new Date(state.category.updatedAt).toLocaleString("vi-VN")}
           </p>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className={`grid gap-6 ${showPreview ? "lg:grid-cols-2" : ""}`}>
             <div className="space-y-6">
               <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
                 <h2 className="font-semibold text-slate-900">Hero</h2>
@@ -187,51 +153,14 @@ export function ContentEditor({
                     className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm text-slate-600">Ảnh banner (đường dẫn)</label>
-                  <input
-                    type="text"
-                    value={content.hero.bannerUrl}
-                    onChange={(e) =>
-                      setContent({
-                        ...content,
-                        hero: { ...content.hero, bannerUrl: e.target.value },
-                      })
-                    }
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-slate-600">Ảnh minh hoạ (đường dẫn)</label>
-                  <input
-                    type="text"
-                    value={content.illustrationUrl ?? ""}
-                    onChange={(e) => setContent({ ...content, illustrationUrl: e.target.value })}
-                    placeholder="Để trống nếu không có ảnh minh hoạ"
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  />
-                </div>
               </section>
 
               <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
                 <h2 className="font-semibold text-slate-900">Hiển thị</h2>
-                <label className="flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={content.showFeatures}
-                    onChange={(e) => setContent({ ...content, showFeatures: e.target.checked })}
-                  />
-                  Hiển thị &quot;Tính năng nổi bật&quot;
-                </label>
-                <label className="flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={content.showFaq}
-                    onChange={(e) => setContent({ ...content, showFaq: e.target.checked })}
-                  />
-                  Hiển thị &quot;Câu hỏi thường gặp&quot;
-                </label>
-
+                <p className="text-xs text-slate-500">
+                  Bấm &quot;Xem trước&quot; ở cuối trang để thấy thay đổi ngay, hoặc Lưu rồi kiểm tra trang
+                  sản phẩm thật.
+                </p>
                 <div>
                   <label className="block text-sm text-slate-600">Kiểu bảng giá</label>
                   <div className="mt-1 flex gap-4 text-sm text-slate-700">
@@ -321,62 +250,6 @@ export function ContentEditor({
 
               <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-slate-900">Tính năng nổi bật</h2>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setContent({
-                        ...content,
-                        features: [...content.features, { title: "", description: "" }],
-                      })
-                    }
-                    className="text-sm text-blue-800 hover:underline"
-                  >
-                    + Thêm tính năng
-                  </button>
-                </div>
-                {content.features.map((feature, index) => (
-                  <div key={index} className="space-y-2 rounded-lg border border-slate-100 p-3">
-                    <input
-                      type="text"
-                      placeholder="Tiêu đề"
-                      value={feature.title}
-                      onChange={(e) => {
-                        const next = [...content.features];
-                        next[index] = { ...next[index], title: e.target.value };
-                        setContent({ ...content, features: next });
-                      }}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                    />
-                    <textarea
-                      placeholder="Mô tả"
-                      rows={2}
-                      value={feature.description}
-                      onChange={(e) => {
-                        const next = [...content.features];
-                        next[index] = { ...next[index], description: e.target.value };
-                        setContent({ ...content, features: next });
-                      }}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setContent({
-                          ...content,
-                          features: content.features.filter((_, i) => i !== index),
-                        })
-                      }
-                      className="text-xs text-red-600 hover:underline"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                ))}
-              </section>
-
-              <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
-                <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-slate-900">Bảng giá</h2>
                   <button
                     type="button"
@@ -442,56 +315,6 @@ export function ContentEditor({
                 ))}
               </section>
 
-              <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-slate-900">FAQ</h2>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setContent({ ...content, faq: [...content.faq, { question: "", answer: "" }] })
-                    }
-                    className="text-sm text-blue-800 hover:underline"
-                  >
-                    + Thêm câu hỏi
-                  </button>
-                </div>
-                {content.faq.map((item, index) => (
-                  <div key={index} className="space-y-2 rounded-lg border border-slate-100 p-3">
-                    <input
-                      type="text"
-                      placeholder="Câu hỏi"
-                      value={item.question}
-                      onChange={(e) => {
-                        const next = [...content.faq];
-                        next[index] = { ...next[index], question: e.target.value };
-                        setContent({ ...content, faq: next });
-                      }}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                    />
-                    <textarea
-                      placeholder="Câu trả lời"
-                      rows={2}
-                      value={item.answer}
-                      onChange={(e) => {
-                        const next = [...content.faq];
-                        next[index] = { ...next[index], answer: e.target.value };
-                        setContent({ ...content, faq: next });
-                      }}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setContent({ ...content, faq: content.faq.filter((_, i) => i !== index) })
-                      }
-                      className="text-xs text-red-600 hover:underline"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                ))}
-              </section>
-
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
@@ -531,14 +354,12 @@ export function ContentEditor({
                     bannerUrl={content.hero.bannerUrl}
                     illustrationUrl={content.illustrationUrl ?? undefined}
                   />
-                  {content.showFeatures ? <FeatureList features={content.features} /> : null}
                   <PricingTable
                     pricing={content.pricing}
                     layout={content.pricingLayout}
                     title={content.pricingLayout === "table" ? content.hero.title.toUpperCase() : undefined}
                     columns={content.pricingColumns ?? undefined}
                   />
-                  {content.showFaq ? <FaqAccordion faq={content.faq} /> : null}
                 </div>
               </div>
             ) : null}

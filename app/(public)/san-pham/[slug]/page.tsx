@@ -4,9 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCategoryViewModel } from "@/lib/category-content";
 import { Hero } from "@/components/landing/Hero";
-import { FeatureList } from "@/components/landing/FeatureList";
 import { PricingTable } from "@/components/landing/PricingTable";
-import { FaqAccordion } from "@/components/landing/FaqAccordion";
 import { LeadForm } from "@/components/landing/LeadForm";
 
 export const revalidate = 3600;
@@ -70,14 +68,12 @@ export default async function CategoryPage({
         bannerUrl={content.hero.bannerUrl}
         illustrationUrl={content.illustrationUrl ?? undefined}
       />
-      {content.showFeatures ? <FeatureList features={content.features} /> : null}
       <PricingTable
         pricing={content.pricing}
         layout={content.pricingLayout}
         title={tablePricing ? content.hero.title.toUpperCase() : undefined}
         columns={content.pricingColumns ?? undefined}
       />
-      {content.showFaq ? <FaqAccordion faq={content.faq} /> : null}
       <LeadForm categories={categories} defaultCategorySlug={category.slug} />
     </>
   );

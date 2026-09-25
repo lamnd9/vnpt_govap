@@ -26,7 +26,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <GoogleTagManagerNoscript />
       <SiteHeader categories={categories} email={settings.email} phone={settings.phone} />
       <main className="flex-1">{children}</main>
-      <SiteFooter phone={settings.phone} email={settings.email} />
+      <SiteFooter phone={settings.phone} email={settings.email} address={settings.address} />
       <FloatingContact
         phone={settings.phone}
         messengerUrl={settings.messengerUrl}

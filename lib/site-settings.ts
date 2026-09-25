@@ -7,6 +7,7 @@ export const SITE_SETTINGS_ID = "main";
 const FALLBACK_SETTINGS = {
   email: "toannm.hcm@vnpt.vn",
   phone: "0941048085",
+  address: "57 Huỳnh Thúc Kháng, Hà Nội",
   messengerUrl: "https://www.facebook.com/messages/t/duylam87",
   zaloUrl: "https://zalo.me/0941048085",
 };

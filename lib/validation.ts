@@ -56,20 +56,10 @@ export const leadUpdateSchema = z
 
 export type LeadUpdateInput = z.infer<typeof leadUpdateSchema>;
 
-const featureSchema = z.object({
-  title: z.string().trim().min(1),
-  description: z.string().trim().min(1),
-});
-
 const pricingPlanSchema = z.object({
   planName: z.string().trim().min(1),
   price: z.string().trim().min(1),
   description: z.string().trim().min(1),
-});
-
-const faqItemSchema = z.object({
-  question: z.string().trim().min(1),
-  answer: z.string().trim().min(1),
 });
 
 export const categoryContentSchema = z.object({
@@ -78,9 +68,7 @@ export const categoryContentSchema = z.object({
     description: z.string().trim().min(1),
     bannerUrl: z.string().trim().min(1),
   }),
-  features: z.array(featureSchema),
   pricing: z.array(pricingPlanSchema),
-  faq: z.array(faqItemSchema),
 });
 
 export type CategoryContentInput = z.infer<typeof categoryContentSchema>;
@@ -106,8 +94,6 @@ export const categoryDisplayConfigSchema = z.object({
     .trim()
     .transform((value) => (value ? value : null))
     .nullable(),
-  showFeatures: z.boolean(),
-  showFaq: z.boolean(),
   pricingLayout: z.enum(PRICING_LAYOUTS),
   pricingColumns: pricingColumnsSchema,
 });
@@ -124,6 +110,7 @@ export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
 export const siteSettingsSchema = z.object({
   email: z.email("Email không hợp lệ."),
   phone: phoneSchema,
+  address: z.string().trim().min(1, "Địa chỉ là bắt buộc."),
   messengerUrl: z.url("Link Messenger không hợp lệ."),
   zaloUrl: z.url("Link Zalo không hợp lệ."),
 });

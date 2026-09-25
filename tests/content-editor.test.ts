@@ -8,12 +8,8 @@ const TEST_SLUG = "chu-ky-so";
 let adminCookie: string;
 let originalContent: {
   hero: Prisma.JsonValue;
-  features: Prisma.JsonValue;
   pricing: Prisma.JsonValue;
-  faq: Prisma.JsonValue;
   illustrationUrl: string | null;
-  showFeatures: boolean;
-  showFaq: boolean;
   pricingLayout: string;
   pricingColumns: Prisma.JsonValue;
 };
@@ -29,12 +25,8 @@ beforeAll(async () => {
   const category = await prisma.category.findUniqueOrThrow({ where: { slug: TEST_SLUG } });
   originalContent = {
     hero: category.hero,
-    features: category.features,
     pricing: category.pricing,
-    faq: category.faq,
     illustrationUrl: category.illustrationUrl,
-    showFeatures: category.showFeatures,
-    showFaq: category.showFaq,
     pricingLayout: category.pricingLayout,
     pricingColumns: category.pricingColumns,
   };
@@ -43,8 +35,8 @@ beforeAll(async () => {
 afterAll(async () => {
   // Khôi phục nội dung gốc để không làm bẩn dữ liệu seed cho các lần chạy sau.
   // Cast vì Prisma phân biệt "null JS thường" với sentinel JsonNull cho cột Json,
-  // trong khi hero/features/pricing/faq đọc lên ở đây chắc chắn không phải null (luôn
-  // là object/array) — riêng pricingColumns (Json? nullable) cần map null -> JsonNull.
+  // trong khi hero/pricing đọc lên ở đây chắc chắn không phải null (luôn là object/array)
+  // — riêng pricingColumns (Json? nullable) cần map null -> JsonNull.
   await prisma.category.update({
     where: { slug: TEST_SLUG },
     data: {
@@ -90,12 +82,8 @@ describe("GET/PUT /api/admin/categories/:slug", () => {
         description: "Mô tả test tự động",
         bannerUrl: "/test-banner.svg",
       },
-      features: [{ title: "Tính năng test", description: "Mô tả tính năng test" }],
       pricing: [{ planName: "Gói test", price: "0đ", description: "Mô tả gói test" }],
-      faq: [{ question: "Câu hỏi test?", answer: "Câu trả lời test" }],
       illustrationUrl: null,
-      showFeatures: true,
-      showFaq: true,
       pricingLayout: "cards" as const,
       pricingColumns: null,
     };
@@ -117,7 +105,7 @@ describe("GET/PUT /api/admin/categories/:slug", () => {
     const publicResponse = await fetch(`${BASE_URL}/api/categories/${TEST_SLUG}`);
     const publicData = await publicResponse.json();
     expect(publicData.hero.title).toBe("Test Title Automation");
-    expect(publicData.features).toHaveLength(1);
+    expect(publicData.pricing).toHaveLength(1);
   });
 
   it("từ chối payload thiếu field bắt buộc", async () => {
@@ -135,12 +123,8 @@ describe("GET/PUT /api/admin/categories/:slug", () => {
       headers: { "Content-Type": "application/json", Cookie: adminCookie },
       body: JSON.stringify({
         hero: { title: "a", description: "b", bannerUrl: "c" },
-        features: [],
         pricing: [],
-        faq: [],
         illustrationUrl: null,
-        showFeatures: true,
-        showFaq: true,
         pricingLayout: "cards",
         pricingColumns: null,
       }),

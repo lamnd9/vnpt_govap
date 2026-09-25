@@ -4,11 +4,12 @@ import { formatPhoneDisplay } from "@/lib/phone";
 type SiteFooterProps = {
   phone: string;
   email: string;
+  address: string;
 };
 
 // Mạng xã hội vẫn cố định (kênh công khai, khác khái niệm với link chat 1:1 ở FloatingContact)
-// — chỉ phone/email lấy từ Cấu hình chung để đồng bộ với header/floating-contact.
-export function SiteFooter({ phone, email }: SiteFooterProps) {
+// — chỉ phone/email/address lấy từ Cấu hình chung để đồng bộ với header/floating-contact.
+export function SiteFooter({ phone, email, address }: SiteFooterProps) {
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
@@ -23,7 +24,7 @@ export function SiteFooter({ phone, email }: SiteFooterProps) {
           <ul className="mt-2 space-y-1 text-sm text-slate-600">
             <li>Hotline: {formatPhoneDisplay(phone)}</li>
             <li>Email: {email}</li>
-            <li>Địa chỉ: 57 Huỳnh Thúc Kháng, Hà Nội</li>
+            <li>Địa chỉ: {address}</li>
           </ul>
         </div>
         <div>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 type SiteSettingsData = {
   email: string;
   phone: string;
+  address: string;
   messengerUrl: string;
   zaloUrl: string;
 };
@@ -35,6 +36,7 @@ export function SettingsEditor() {
           setForm({
             email: data.email,
             phone: data.phone,
+            address: data.address,
             messengerUrl: data.messengerUrl,
             zaloUrl: data.zaloUrl,
           });
@@ -122,6 +124,19 @@ export function SettingsEditor() {
               />
               {fieldErrors?.phone ? (
                 <p className="mt-1 text-sm text-red-600">{fieldErrors.phone[0]}</p>
+              ) : null}
+            </div>
+
+            <div>
+              <label className="block text-sm text-slate-600">Địa chỉ</label>
+              <input
+                type="text"
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+              {fieldErrors?.address ? (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.address[0]}</p>
               ) : null}
             </div>
 
