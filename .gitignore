@@ -20,6 +20,9 @@
 # production
 /build
 
+# ảnh admin upload khi viết bài giới thiệu — nội dung runtime, không phải asset nguồn
+/public/uploads
+
 # misc
 .DS_Store
 *.pem
