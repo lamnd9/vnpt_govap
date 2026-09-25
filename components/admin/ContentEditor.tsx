@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import type { CategoryContentInput, CategoryDisplayConfig } from "@/lib/validation";
 import { Hero } from "@/components/landing/Hero";
 import { PricingTable } from "@/components/landing/PricingTable";
+import { CategoryArticle } from "@/components/landing/CategoryArticle";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 type CategoryEditState = CategoryContentInput & CategoryDisplayConfig;
 
@@ -28,6 +30,7 @@ function extractEditState(category: CategoryRecord): CategoryEditState {
     illustrationUrl: category.illustrationUrl,
     pricingLayout: category.pricingLayout,
     pricingColumns: category.pricingColumns,
+    article: category.article,
   };
 }
 
@@ -315,6 +318,18 @@ export function ContentEditor({ slug }: { slug: string }) {
                 ))}
               </section>
 
+              <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
+                <h2 className="font-semibold text-slate-900">Bài giới thiệu</h2>
+                <p className="text-xs text-slate-500">
+                  Hiển thị giữa Bảng giá và form Đăng ký tư vấn trên trang sản phẩm. Để trống nếu
+                  không cần.
+                </p>
+                <RichTextEditor
+                  value={content.article ?? ""}
+                  onChange={(html) => setContent({ ...content, article: html })}
+                />
+              </section>
+
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
@@ -360,6 +375,7 @@ export function ContentEditor({ slug }: { slug: string }) {
                     title={content.pricingLayout === "table" ? content.hero.title.toUpperCase() : undefined}
                     columns={content.pricingColumns ?? undefined}
                   />
+                  {content.article ? <CategoryArticle html={content.article} /> : null}
                 </div>
               </div>
             ) : null}

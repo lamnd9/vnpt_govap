@@ -17,6 +17,7 @@ model Category {
   illustrationUrl String? // ảnh minh hoạ hero, null = không hiển thị
   pricingLayout   String   @default("cards") // "cards" | "table"
   pricingColumns  Json? // { plan, middle, price } | null = dùng nhãn mặc định
+  article         String? @db.Text // bài giới thiệu dạng blog (HTML từ rich text editor), null = không hiển thị
   updatedBy       String? // email admin sửa gần nhất
   updatedAt       DateTime @updatedAt
   createdAt       DateTime @default(now())

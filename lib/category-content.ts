@@ -40,6 +40,7 @@ export function getCategoryDisplayConfig(category: Category): CategoryDisplayCon
       ? (category.pricingLayout as CategoryDisplayConfig["pricingLayout"])
       : "cards",
     pricingColumns: parsedColumns?.success ? parsedColumns.data : null,
+    article: category.article,
   };
 }
 

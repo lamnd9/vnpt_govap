@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { categoryUpdateSchema } from "@/lib/validation";
 import { getCategoryViewModel } from "@/lib/category-content";
+import { isArticleEmpty, sanitizeArticleHtml } from "@/lib/sanitize-html";
 
 export async function GET(
   _request: NextRequest,
@@ -55,11 +56,19 @@ export async function PUT(
   // Danh tính admin do proxy.ts xác thực JWT gắn vào, không lấy trực tiếp từ input client.
   const adminEmail = request.headers.get("x-admin-email") ?? undefined;
 
+  // Sanitize HTML từ rich text editor trước khi lưu (render thẳng bằng dangerouslySetInnerHTML
+  // ở trang public) — "<p></p>" (editor trống) hoặc chỉ có tag không chữ đều coi là null.
+  const article =
+    parsed.data.article !== null && !isArticleEmpty(parsed.data.article)
+      ? sanitizeArticleHtml(parsed.data.article)
+      : null;
+
   try {
     const category = await prisma.category.update({
       where: { slug },
       data: {
         ...parsed.data,
+        article,
         // Cột Json nullable: Prisma cần sentinel Prisma.JsonNull thay vì JS null để thực sự
         // ghi giá trị null (JS null bị hiểu là "field không xuất hiện trong payload").
         pricingColumns: parsed.data.pricingColumns ?? Prisma.JsonNull,

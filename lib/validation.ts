@@ -96,6 +96,10 @@ export const categoryDisplayConfigSchema = z.object({
     .nullable(),
   pricingLayout: z.enum(PRICING_LAYOUTS),
   pricingColumns: pricingColumnsSchema,
+  // HTML thô từ rich text editor — sanitize (DOMPurify) + rỗng-hoá được xử lý riêng ở route
+  // API (app/api/admin/categories/[slug]/route.ts), không làm trong schema vì cần chạy ở
+  // server runtime (DOMPurify cần DOM polyfill, tách khỏi lib/validation.ts dùng chung).
+  article: z.string().nullable(),
 });
 
 export type CategoryDisplayConfig = z.infer<typeof categoryDisplayConfigSchema>;

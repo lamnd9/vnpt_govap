@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCategoryViewModel } from "@/lib/category-content";
 import { Hero } from "@/components/landing/Hero";
 import { PricingTable } from "@/components/landing/PricingTable";
+import { CategoryArticle } from "@/components/landing/CategoryArticle";
 import { LeadForm } from "@/components/landing/LeadForm";
 
 export const revalidate = 3600;
@@ -74,6 +75,7 @@ export default async function CategoryPage({
         title={tablePricing ? content.hero.title.toUpperCase() : undefined}
         columns={content.pricingColumns ?? undefined}
       />
+      {content.article ? <CategoryArticle html={content.article} /> : null}
       <LeadForm categories={categories} defaultCategorySlug={category.slug} />
     </>
   );
